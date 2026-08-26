@@ -1,0 +1,9 @@
+# Local IDE and Gradle state
+.idea/
+.gradle/
+build/
+
+# Local secrets and developer-only Spring configuration
+.env
+application-local.properties
+src/main/resources/application-local.properties
