@@ -2,6 +2,8 @@ package com.repifuzz.service;
 
 import com.repifuzz.Entity.User;
 import com.repifuzz.EntityDTO.LoginRequest;
+import com.repifuzz.EntityDTO.RegisterUserRequest;
+import com.repifuzz.EntityDTO.UserResponse;
 import com.repifuzz.Repo.UserRepository;
 import com.repifuzz.jwtUtil.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +26,18 @@ public class UserService {
     @Autowired
     JwtUtil jwtUtil;
 
-    /*public User registerUser(User user) {
-        // hash password before saving
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setPassword(user.getPassword());
+    public UserResponse registerUser(RegisterUserRequest request) {
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+        user.setAddress(request.getAddress());
+        user.setPinCode(request.getPinCode());
+        user.setCity(request.getCity());
+        user.setCountry(request.getCountry());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        return userRepository.save(user);
-    }*/
-
-    public User registerUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        return mapToResponse(userRepository.save(user));
     }
 
     public Optional<String> login(String email, String rawPassword) {
@@ -55,5 +58,18 @@ public class UserService {
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    private UserResponse mapToResponse(User user) {
+        return UserResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .address(user.getAddress())
+                .pinCode(user.getPinCode())
+                .city(user.getCity())
+                .country(user.getCountry())
+                .build();
     }
 }

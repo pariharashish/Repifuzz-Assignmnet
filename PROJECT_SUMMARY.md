@@ -48,6 +48,8 @@ The project uses a conventional layered architecture:
 | `Entity` | `Incident` | Maps incidents to the `incidents` table. |
 | `Entity` | `IncidentType` | Allowed incident categories: `ENTERPRISE` and `GOVERNMENT`. |
 | `EntityDTO` | `LoginRequest` | Login JSON request payload. |
+| `EntityDTO` | `RegisterUserRequest` | Registration JSON request payload. |
+| `EntityDTO` | `UserResponse` | Safe registration response; excludes password data. |
 | `EntityDTO` | `IncidentRequest` | Incident creation JSON request payload. |
 | `EntityDTO` | `IncidentResponse` | Incident API response payload. |
 | `jwtUtil` | `JwtUtil` | Creates, parses, and validates signed JWTs. |
@@ -60,7 +62,7 @@ Base path: `/api/ims`
 
 | Method | Endpoint | Purpose | Request body / parameter | Response |
 |---|---|---|---|---|
-| `POST` | `/user/register` | Creates a user account. | `username`, `email`, optional profile/contact fields, `password` | Persisted user object. |
+| `POST` | `/user/register` | Creates a user account. | `username`, `email`, optional profile/contact fields, `password` | `201 Created` and a safe user response without password data. |
 | `POST` | `/user/login` | Authenticates by email and password. | `email`, `password` | JSON containing a JWT token. |
 | `POST` | `/incidents` | Creates an incident. | `reporterUserId`, reporter details, `incidentType`, `description`, `details` | Created `IncidentResponse`. |
 | `GET` | `/incidents/{incidentId}` | Retrieves one incident by business incident ID. | Path variable `incidentId` | `IncidentResponse`. |

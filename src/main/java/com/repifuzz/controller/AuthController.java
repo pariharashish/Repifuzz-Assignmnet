@@ -1,11 +1,13 @@
 package com.repifuzz.controller;
-import com.repifuzz.Entity.User;
 import com.repifuzz.EntityDTO.LoginRequest;
+import com.repifuzz.EntityDTO.RegisterUserRequest;
+import com.repifuzz.EntityDTO.UserResponse;
 import com.repifuzz.jwtUtil.JwtUtil;
 import com.repifuzz.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +29,8 @@ public class AuthController {
     UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<com.repifuzz.Entity.User> register(@RequestBody User user) {
-        return ResponseEntity.ok(userService.registerUser(user));
+    public ResponseEntity<UserResponse> register(@RequestBody RegisterUserRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(request));
     }
 
     /*@PostMapping("/login")
