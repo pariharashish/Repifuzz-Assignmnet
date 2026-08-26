@@ -69,7 +69,7 @@ Base path: `/api/ims`
 
 Login returns a JWT with the user's email as its subject and a configured 24-hour lifetime. The `JwtAuthenticationFilter` recognizes an `Authorization: Bearer <token>` header and loads the corresponding user into Spring Security's context.
 
-Currently, `SecurityConfig` permits all paths matching `/api/ims/**`. Because every implemented endpoint is under that prefix, a JWT is not required for the existing API routes even though JWT processing is enabled.
+`POST /api/ims/user/register` and `POST /api/ims/user/login` are public. Every other route, including incident creation and lookup, requires a valid JWT. Requests to protected routes without valid authentication receive `401 Unauthorized`.
 
 ## Database
 
