@@ -50,6 +50,7 @@ The project uses a conventional layered architecture:
 | `EntityDTO` | `LoginRequest` | Login JSON request payload. |
 | `EntityDTO` | `RegisterUserRequest` | Registration JSON request payload. |
 | `EntityDTO` | `UserResponse` | Safe registration response; excludes password data. |
+| `exception` | `GlobalExceptionHandler` | Converts validation and application exceptions into a consistent JSON error response. |
 | `EntityDTO` | `IncidentRequest` | Incident creation JSON request payload. |
 | `EntityDTO` | `IncidentResponse` | Incident API response payload. |
 | `jwtUtil` | `JwtUtil` | Creates, parses, and validates signed JWTs. |
@@ -72,6 +73,8 @@ Base path: `/api/ims`
 Login returns a JWT with the user's email as its subject and a configured 24-hour lifetime. The `JwtAuthenticationFilter` recognizes an `Authorization: Bearer <token>` header and loads the corresponding user into Spring Security's context.
 
 `POST /api/ims/user/register` and `POST /api/ims/user/login` are public. Every other route, including incident creation and lookup, requires a valid JWT. Requests to protected routes without valid authentication receive `401 Unauthorized`.
+
+All request payloads are validated before they reach service logic. Validation failures return `400 Bad Request` with a JSON response containing field-specific messages. Missing resources return `404 Not Found`, duplicate unique values return `409 Conflict`, missing/invalid authentication and invalid login credentials return `401 Unauthorized`, forbidden operations return `403 Forbidden`, and unexpected failures return a safe `500 Internal Server Error` response.
 
 ## Database
 

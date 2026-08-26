@@ -6,6 +6,7 @@ import com.repifuzz.EntityDTO.IncidentRequest;
 import com.repifuzz.EntityDTO.IncidentResponse;
 import com.repifuzz.Repo.IncidentRepository;
 import com.repifuzz.Repo.UserRepository;
+import com.repifuzz.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +37,7 @@ public class IncidentService {
     @Transactional
     public IncidentResponse createIncident(IncidentRequest request) {
         User reporter = userRepository.findById(request.getReporterUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + request.getReporterUserId()));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + request.getReporterUserId()));
 
         Incident incident = new Incident();
         incident.setIncidentId(generateUniqueIncidentId());
@@ -56,7 +57,7 @@ public class IncidentService {
     @Transactional(readOnly = true)
     public IncidentResponse getIncident(String incidentId) {
         Incident incident = incidentRepository.findByIncidentId(incidentId)
-                .orElseThrow(() -> new RuntimeException("Incident not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Incident not found"));
         return mapToResponse(incident);
     }
 

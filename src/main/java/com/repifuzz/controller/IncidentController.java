@@ -3,6 +3,7 @@ package com.repifuzz.controller;
 import com.repifuzz.EntityDTO.IncidentRequest;
 import com.repifuzz.EntityDTO.IncidentResponse;
 import com.repifuzz.service.IncidentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ public class IncidentController {
     private final IncidentService incidentService;
 
     @PostMapping
-    public ResponseEntity<IncidentResponse> createIncident(@RequestBody IncidentRequest request) {
+    public ResponseEntity<IncidentResponse> createIncident(@Valid @RequestBody IncidentRequest request) {
         return ResponseEntity.ok(incidentService.createIncident(request));
     }
 
