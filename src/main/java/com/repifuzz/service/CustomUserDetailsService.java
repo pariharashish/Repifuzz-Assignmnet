@@ -8,7 +8,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import com.repifuzz.Entity.UserRole;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +25,12 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(user -> new User(
                         user.getEmail(),
                         user.getPassword(),
-                        Collections.emptyList()
+                        List.of(new SimpleGrantedAuthority("ROLE_" + resolveRole(user.getRole()).name()))
                 ))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+    }
+
+    private UserRole resolveRole(UserRole role) {
+        return role == null ? UserRole.REPORTER : role;
     }
 }

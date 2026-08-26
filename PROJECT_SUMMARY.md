@@ -44,7 +44,8 @@ The project uses a conventional layered architecture:
 | `service` | `IncidentService` | Creates/retrieves incidents, creates unique business IDs, and maps responses. |
 | `Repo` | `UserRepository` | JPA data access for `User` entities, including email/username lookup. |
 | `Repo` | `IncidentRepository` | JPA data access for incidents and incident ID lookups. |
-| `Entity` | `User` | Maps users to the `users` table. |
+| `Entity` | `User` | Maps users to the `users` table, including the application role. |
+| `Entity` | `UserRole` | IMS roles: `REPORTER`, `ANALYST`, and `ADMIN`. |
 | `Entity` | `Incident` | Maps incidents to the `incidents` table. |
 | `Entity` | `IncidentType` | Allowed incident categories: `ENTERPRISE` and `GOVERNMENT`. |
 | `EntityDTO` | `LoginRequest` | Login JSON request payload. |
@@ -65,7 +66,7 @@ Base path: `/api/ims`
 |---|---|---|---|---|
 | `POST` | `/user/register` | Creates a user account. | `username`, `email`, optional profile/contact fields, `password` | `201 Created` and a safe user response without password data. |
 | `POST` | `/user/login` | Authenticates by email and password. | `email`, `password` | JSON containing a JWT token. |
-| `POST` | `/incidents` | Creates an incident. | `reporterUserId`, reporter details, `incidentType`, `description`, `details` | Created `IncidentResponse`. |
+| `POST` | `/incidents` | Creates an incident for the authenticated user. | `incidentType`, `description`, `details` | Created `IncidentResponse`. |
 | `GET` | `/incidents/{incidentId}` | Retrieves one incident by business incident ID. | Path variable `incidentId` | `IncidentResponse`. |
 
 ### Authentication behavior
@@ -73,6 +74,8 @@ Base path: `/api/ims`
 Login returns a JWT with the user's email as its subject and a configured 24-hour lifetime. The `JwtAuthenticationFilter` recognizes an `Authorization: Bearer <token>` header and loads the corresponding user into Spring Security's context.
 
 `POST /api/ims/user/register` and `POST /api/ims/user/login` are public. Every other route, including incident creation and lookup, requires a valid JWT. Requests to protected routes without valid authentication receive `401 Unauthorized`.
+
+New registrations receive the `REPORTER` role. Reporters can create and retrieve only their own incidents. `ANALYST` and `ADMIN` users can retrieve any incident. Roles are currently assigned outside the public registration API; an administrative role-management endpoint can be added later.
 
 All request payloads are validated before they reach service logic. Validation failures return `400 Bad Request` with a JSON response containing field-specific messages. Missing resources return `404 Not Found`, duplicate unique values return `409 Conflict`, missing/invalid authentication and invalid login credentials return `401 Unauthorized`, forbidden operations return `403 Forbidden`, and unexpected failures return a safe `500 Internal Server Error` response.
 
@@ -101,6 +104,7 @@ Mapped by `User`.
 | `email` | Required and unique; used for login and JWT subject. |
 | `phone`, `address`, `pin_code`, `city`, `country` | User profile/contact data. |
 | `password` | BCrypt-hashed password. |
+| `role` | String enum: `REPORTER`, `ANALYST`, or `ADMIN`; new accounts default to `REPORTER`. |
 
 ### `incidents` table
 

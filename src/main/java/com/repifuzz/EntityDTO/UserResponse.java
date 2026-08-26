@@ -1,5 +1,6 @@
 package com.repifuzz.EntityDTO;
 
+import com.repifuzz.Entity.UserRole;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,4 +15,5 @@ public class UserResponse {
     private String pinCode;
     private String city;
     private String country;
+    private UserRole role;
 }

@@ -21,6 +21,15 @@ public class User {
     private String city;
     private String country;
     private String password; // hashed
-// getters/setters
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.REPORTER;
+
+    @PrePersist
+    protected void setDefaultRole() {
+        if (role == null) {
+            role = UserRole.REPORTER;
+        }
+    }
 }

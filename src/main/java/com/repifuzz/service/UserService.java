@@ -1,6 +1,7 @@
 package com.repifuzz.service;
 
 import com.repifuzz.Entity.User;
+import com.repifuzz.Entity.UserRole;
 import com.repifuzz.EntityDTO.LoginRequest;
 import com.repifuzz.EntityDTO.RegisterUserRequest;
 import com.repifuzz.EntityDTO.UserResponse;
@@ -36,6 +37,7 @@ public class UserService {
         user.setCity(request.getCity());
         user.setCountry(request.getCountry());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(UserRole.REPORTER);
 
         return mapToResponse(userRepository.save(user));
     }
@@ -70,6 +72,7 @@ public class UserService {
                 .pinCode(user.getPinCode())
                 .city(user.getCity())
                 .country(user.getCountry())
+                .role(user.getRole())
                 .build();
     }
 }

@@ -43,6 +43,7 @@ class RepifuzzAssignmnetApplicationTests {
                 .id(1L)
                 .username("reporter")
                 .email("reporter@example.com")
+                .role(com.repifuzz.Entity.UserRole.REPORTER)
                 .build());
 
         mockMvc.perform(post("/api/ims/user/register")
@@ -52,6 +53,7 @@ class RepifuzzAssignmnetApplicationTests {
                                 """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.email").value("reporter@example.com"))
+                .andExpect(jsonPath("$.role").value("REPORTER"))
                 .andExpect(jsonPath("$.password").doesNotExist());
     }
 
