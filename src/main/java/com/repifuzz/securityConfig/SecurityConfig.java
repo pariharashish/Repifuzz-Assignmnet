@@ -1,10 +1,11 @@
+// src/main/java/com/repifuzz/securityConfig/SecurityConfig.java
 package com.repifuzz.securityConfig;
 
+import com.repifuzz.Repo.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,12 +17,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final RestAuthenticationEntryPoint authenticationEntryPoint;
-    private final RestAccessDeniedHandler accessDeniedHandler;
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthFilter;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -34,23 +36,30 @@ public class SecurityConfig {
                 // 1. Disable CSRF for REST APIs
                 .csrf(csrf -> csrf.disable())
 
-                // 2. Set Session Management to STATELESS (No server-side sessions)
+                // 2. Set Session Management to STATELESS
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // 3. Keep account creation and login public; protect every other route.
+                // 3. Define Endpoint Authorization Rules
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/ims/user/register", "/api/ims/user/login").permitAll()
-                        .anyRequest().authenticated())
+                        // PUBLIC endpoints - only registration and login
+                        .requestMatchers("/api/ims/user/register").permitAll()
+                        .requestMatchers("/api/ims/user/login").permitAll()
 
-                // 4. Return 401 when a protected endpoint is called without valid authentication.
-                .exceptionHandling(exceptions -> exceptions
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler))
+                        // PROTECTED endpoints - REQUIRES AUTHENTICATION
+                        // All incident endpoints require authenticated user
+                        .requestMatchers("/api/ims/incidents/**").authenticated()
 
-                // 5. Disable Form Login
+                        // All lifecycle operations require authentication
+                        .requestMatchers("/api/ims/incidents/lifecycle/**").authenticated()
+
+                        // Any other request must be authenticated
+                        .anyRequest().authenticated()
+                )
+
+                // 4. Disable Form Login
                 .formLogin(login -> login.disable())
 
-                // 6. Add Custom JWT Filter before Spring's UsernamePasswordAuthenticationFilter
+                // 5. Add Custom JWT Filter before Spring's UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -60,7 +69,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
         return cfg.getAuthenticationManager();
     }
-
-
 }
-

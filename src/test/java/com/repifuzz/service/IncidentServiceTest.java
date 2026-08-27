@@ -10,8 +10,6 @@ import com.repifuzz.Repo.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -160,7 +158,7 @@ class IncidentServiceTest {
 
     @Test
     void getIncident_withoutAuthentication_throwsAccessDenied() {
-        // prepare an incident present in repo
+        // prepare an incident present in repo so getIncident calls getAuthenticatedUser()
         Incident inc = new Incident();
         inc.setIncidentId("RMG000012025");
         when(incidentRepository.findByIncidentId(inc.getIncidentId())).thenReturn(Optional.of(inc));

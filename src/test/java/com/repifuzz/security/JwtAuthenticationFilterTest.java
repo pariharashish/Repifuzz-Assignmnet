@@ -32,7 +32,7 @@ class JwtAuthenticationFilterTest {
 
     private AutoCloseable closeable;
 
-    private JwtAuthenticationFilter filter;
+    public JwtAuthenticationFilter filter;
 
     @BeforeEach
     void setUp() {
