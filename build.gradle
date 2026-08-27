@@ -2,11 +2,16 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.6'
 	id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
 }
 
+jacoco {
+    toolVersion = "0.8.10"
+}
 group = 'com.repifuzz'
 version = '0.0.1-SNAPSHOT'
 description = 'Repifuzz project assignment'
+
 
 java {
 	toolchain {
@@ -43,4 +48,10 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
 }
