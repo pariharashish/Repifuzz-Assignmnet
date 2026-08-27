@@ -159,10 +159,17 @@ class IncidentServiceTest {
     }
 
     @Test
-    void getAuthenticatedUser_noAuth_throws() {
+    void getIncident_withoutAuthentication_throwsAccessDenied() {
+        // prepare an incident present in repo
+        Incident inc = new Incident();
+        inc.setIncidentId("RMG000012025");
+        when(incidentRepository.findByIncidentId(inc.getIncidentId())).thenReturn(Optional.of(inc));
+
+        // Ensure no SecurityContext set
         SecurityContextHolder.clearContext();
+
         assertThrows(org.springframework.security.access.AccessDeniedException.class,
-                () -> incidentService.getAuthenticatedUser());
+                () -> incidentService.getIncident(inc.getIncidentId()));
     }
 
 }
