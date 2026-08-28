@@ -234,6 +234,3 @@ jwt.expirationMs=60000
 - **Support:** For bugs or feature requests, please open an issue.
 
 ---
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
